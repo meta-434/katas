@@ -5,28 +5,16 @@
 // has the smallest index is the solution.
 
 export function sumPairs(ints: number[], s: number): [number, number] | void {
-    let soln: [number, number] = [undefined, undefined];
-    let done = false;
-    ints.forEach((integer: number, idx: number) => {
-        if (done) {
-            return;
+    let seen = new Set();
+    for (let i: number = 0; i < ints.length; i++) {
+        // console.log('current value = ', ints[i], ' with seen= ', seen, ' check if ', s-ints[i], ' is in set');
+        if (seen.has(s - ints[i])) {
+            return [s - ints[i], ints[i]]
         } else {
-            for (let i: number = idx + 1; i < ints.length; i++) {
-                //console.log(`at number in position ${i} of array, value ${ints[i]}`);
-                if (integer + ints[i] === s) {
-                    console.log(`solution! ${integer} + ${ints[i]} === ${s}`);
-                    soln[0] = (integer);
-                    soln[1] = (ints[i]);
-                    done = true;
-                    break;
-                }
-            }
+            seen.add(ints[i]);
         }
-
-    });
-    console.log('soln equals ', soln);
-    if (soln[0] === undefined && soln[1] === undefined) return undefined;
-    else return soln;
+    }
+    return undefined;
 }
 
 
