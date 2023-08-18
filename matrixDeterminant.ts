@@ -4,44 +4,26 @@
 //                       | g h i | = a(e*i - h*f) - b(d*i - g*f) + c(d*h - g*e)
 
 export function determinant(m: number[][]) {
-    // return the determinant of the matrix passed in
-    let termSignIsPos: boolean = true;
-
-    return minor(m, undefined)
-}
-
-function minor(n: number[][], factor: number = 1, carryOver: number = 0) {
-    console.log('carried over ', carryOver);
-    let holdCarryover;
-    if (!n || n.length === 0) {
-        return factor * carryOver;
+    const size: number = m.length;
+    if (size === 1) { // 1x1 base case returns number
+        return m[0][0];
     }
+    else {
+        let total: number = 0;
+        for (let i:number = 0; i < size; i++) {
+            let holdArr: number[][] = m;
+            let factor: number = ((i % 2 === 0) ? 1 : -1); // starting at term 0 = positive, terms alternate sign
+            let element = holdArr[0][i]; //
 
-    const size: number = n.length;
-    if (size < 2) return n[0][0];
-    else if (size === 2) {
-        const det: number = ((n[0][0] * n[1][1]) - (n[0][1] * n[1][0]));
-        console.log('2x2 received, returning ', factor, '* ', (n[0][0] * n[1][1]) - (n[0][1] * n[1][0]));
-        return factor * (carryOver + det);
-    } else {
-        let holdArr: number[][] = [];
-        let holdFactor: number = 1;
-        for (let i: number = 0; i < size; i++) {
-            holdArr = n;
-            holdFactor = ((i % 2 === 0) ? 1 : -1) * n[0][i];
-            // remove 1 element (row) from array at pos. 0, i.e., first row
-            holdArr = holdArr.filter((_: number[], idx: number) => idx != 0);
-            for (let j: number = 0; j < size - 1; j++) { // size -1 because top row was cut off
-                holdArr[j] = holdArr[j].filter((_: number, idx: number) => idx !== i); // remove 1 element from row at pos. 1, i.e., column i
-            }
-            console.log('re-calling with ', holdArr, factor * holdFactor, carryOver)
-            return minor(holdArr, factor * holdFactor, carryOver);
+            // remove first row
+            holdArr = holdArr.slice(1).map((row) => {
+                // for each row, remove element in column i
+                return row.slice(0,i).concat(row.slice(i+1,size+1))
+            })
+            total += element * factor * determinant(holdArr);
         }
-
-
+        return total;
     }
-
-
 }
 
 
@@ -55,6 +37,8 @@ describe("determinant", function () {
         expect(determinant([[1]])).to.equal(1);
     });
 
+    // | 1 3 |
+    // | 2 5 |
     it("should work correctly for 2 x 2 matrix", () => {
         expect(determinant(m1)).to.equal(-1);
     });
